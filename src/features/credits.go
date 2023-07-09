@@ -1,50 +1,59 @@
 package features
 
 import (
+	"strconv"
+
 	"github.com/elanticrypt0/denario_go/src/models"
-	"github.com/elanticrypt0/denario_go/src/webcore"
+	"github.com/gofiber/fiber/v2"
 )
 
-func FindOneCredit(id int) models.Credit {
-	feature := webcore.NewFeature()
-	var credit models.Credit
-	feature.Db.First(&credit, id)
-	return credit
+func FindOneCredit(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id", "0"))
+	return c.JSON(models.FindOneCredit(id))
 }
 
-func FindAllCredits() []models.Credit {
-	feature := webcore.NewFeature()
-	var credits []models.Credit
-	feature.Db.Find(&credits)
-	return credits
+func FindAllCredits(c *fiber.Ctx) error {
+	return c.JSON(models.FindAllCredits())
 }
 
-func CreateCredit(name string, comment string, amount float64, payments int, started_at string, finished_at string, category_id int, is_mutable bool) models.Credit {
-	feature := webcore.NewFeature()
-	credit := models.Credit{
-		Name:       name,
-		Comment:    comment,
-		Amount:     amount,
-		Payments:   payments,
-		StartedAt:  started_at,
-		FinishedAt: finished_at,
-		CategoryID: category_id,
-	}
-	feature.Db.Create(&credit)
-	return credit
+func CreateCredit(c *fiber.Ctx) error {
+	name := c.Params("name", "")
+	comment := c.Params("comment", "")
+	amount, _ := strconv.ParseFloat(c.Params("amount", "0"), 64)
+	payments, _ := strconv.Atoi(c.Params("payments", "0"))
+	started_at := c.Params("started_at", "")
+	finished_at := c.Params("finished_at", "")
+	category_id, _ := strconv.Atoi(c.Params("category_id", "0"))
+	is_mutable, _ := strconv.ParseBool(c.Params("is_mutable", "false"))
+
+	credit := models.CreateCredit(name, comment, amount, payments, started_at, finished_at, category_id, is_mutable)
+
+	return c.JSON(credit)
 }
 
-func UpdateCredit(credit models.Credit) models.Credit {
-	feature := webcore.NewFeature()
-	feature.Db.Save(&credit)
-	return credit
+func UpdateCredit(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id", "0"))
+	credit := models.FindOneCredit(id)
+	name := c.Params("name", "")
+	comment := c.Params("comment", "")
+	amount, _ := strconv.ParseFloat(c.Params("amount", "0"), 64)
+	payments, _ := strconv.Atoi(c.Params("payments", "0"))
+	started_at := c.Params("started_at", "")
+	finished_at := c.Params("finished_at", "")
+
+	credit.Name = name
+	credit.Comment = comment
+	credit.Amount = amount
+	credit.Payments = payments
+	credit.StartedAt = started_at
+	credit.FinishedAt = finished_at
+
+	credit = models.UpdateCredit(credit)
+
+	return c.JSON(credit)
 }
 
-func DeleteCredit(id int) models.Credit {
-	feature := webcore.NewFeature()
-	var credit models.Credit
-	feature.Db.First(&credit, id)
-	credit.IsDeleted = true
-	feature.Db.Save(&credit)
-	return credit
+func DeleteCredit(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id", "0"))
+	return c.JSON(models.DeleteCredit(id))
 }

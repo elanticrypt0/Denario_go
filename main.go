@@ -18,22 +18,22 @@ func main() {
 	categories := api.Group("/categories")
 	// categories
 	categories.Get("/", func(c *fiber.Ctx) error {
-		categories := features.FindAllCategories()
-		return c.JSON(categories)
+		return features.FindAllCategories(c)
+	})
+	categories.Get("/:id", func(c *fiber.Ctx) error {
+		return features.FindOneCategory(c)
 	})
 
 	// credits
 	credits := api.Group("/credits")
 	credits.Get("/", func(c *fiber.Ctx) error {
-		credits := features.FindAllCredits()
-		return c.JSON(credits)
+		return features.FindAllCredits(c)
 	})
 
 	// records
 	records := api.Group("/records")
 	records.Get("/", func(c *fiber.Ctx) error {
-		records := features.FindAllRecords()
-		return c.JSON(records)
+		return features.FindAllRecords(c)
 	})
 
 	// setup

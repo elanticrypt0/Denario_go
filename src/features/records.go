@@ -1,65 +1,73 @@
 package features
 
 import (
+	"strconv"
+
 	"github.com/elanticrypt0/denario_go/src/models"
-	"github.com/elanticrypt0/denario_go/src/webcore"
+	"github.com/gofiber/fiber/v2"
 )
 
 // Find a record by ID
 // Return the record
 // Return an error if there was a problem
-func FindOneRecord(id int) models.Record {
-	feature := webcore.NewFeature()
-	var record models.Record
-	feature.Db.First(&record, id)
-	return record
+func FindOneRecord(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id", "0"))
+	return c.JSON(models.FindOneRecord(id))
 }
 
 // Find all records
 // Return the records
 // Return an error if there was a problem
-func FindAllRecords() []models.Record {
-	feature := webcore.NewFeature()
-	var records []models.Record
-	feature.Db.Find(&records)
-	return records
+func FindAllRecords(c *fiber.Ctx) error {
+	return c.JSON(models.FindAllRecords())
 }
 
 // Create a new record
 // Return the new record
 // Return an error if there was a problem
-func CreateRecord(name string, amount float64, amount_io string, comment string, record_date string, category_id int, is_mutable bool) models.Record {
-	feature := webcore.NewFeature()
-	record := models.Record{
-		Name:       name,
-		Amount:     amount,
-		AmountIo:   amount_io,
-		Comment:    comment,
-		RecordDate: record_date,
-		CategoryID: category_id,
-		IsMutable:  is_mutable,
-	}
-	feature.Db.Create(&record)
-	return record
+func CreateRecord(c *fiber.Ctx) error {
+	name := c.Params("name", "")
+	amount, _ := strconv.ParseFloat(c.Params("amount", "0"), 64)
+	amount_io := c.Params("amount_io", "")
+	comment := c.Params("comment", "")
+	record_date := c.Params("record_date", "")
+	category_id, _ := strconv.Atoi(c.Params("category_id", "0"))
+	is_mutable, _ := strconv.ParseBool(c.Params("is_mutable", "false"))
+
+	record := models.CreateRecord(name, amount, amount_io, comment, record_date, category_id, is_mutable)
+	return c.JSON(record)
 }
 
 // Update a record
 // Return the updated record
 // Return an error if there was a problem
-func UpdateRecord(record models.Record) models.Record {
-	feature := webcore.NewFeature()
-	feature.Db.Save(&record)
-	return record
+func UpdateRecord(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id", "0"))
+	name := c.Params("name", "")
+	amount, _ := strconv.ParseFloat(c.Params("amount", "0"), 64)
+	amount_io := c.Params("amount_io", "")
+	comment := c.Params("comment", "")
+	record_date := c.Params("record_date", "")
+	category_id, _ := strconv.Atoi(c.Params("category_id", "0"))
+	is_mutable, _ := strconv.ParseBool(c.Params("is_mutable", "false"))
+
+	record := models.FindOneRecord(id)
+	record.Name = name
+	record.Amount = amount
+	record.AmountIo = amount_io
+	record.Comment = comment
+	record.RecordDate = record_date
+	record.CategoryID = category_id
+	record.IsMutable = is_mutable
+	models.UpdateRecord(record)
+
+	return c.JSON(record)
 }
 
 // Delete a record
 // Return the deleted record
 // Return an error if there was a problem
-func DeleteRecord(id int) models.Record {
-	feature := webcore.NewFeature()
-	var record models.Record
-	feature.Db.First(&record, id)
-	record.IsDeleted = true
-	feature.Db.Save(&record)
-	return record
+func DeleteRecord(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id", "0"))
+	return c.JSON(models.DeleteRecord(id))
 }
