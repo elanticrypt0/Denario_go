@@ -2,7 +2,7 @@ package features
 
 import (
 	"github.com/elanticrypt0/denario_go/models"
-	"github.com/elanticrypt0/webcore"
+	"github.com/elanticrypt0/denario_go/webcore"
 )
 
 func FindOneCredit(id int) models.Credit {
