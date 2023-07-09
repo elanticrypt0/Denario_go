@@ -52,6 +52,8 @@ func CreateCredit(name string, comment string, amount float64, payments int, sta
 func UpdateCredit(credit Credit) Credit {
 	feature := webcore.NewFeature()
 	feature.Db.Save(&credit)
+	deleteAllRecordsOfThisCredit(int(credit.ID))
+	CreateRecordsForCredit(credit, credit.CategoryID)
 	return credit
 }
 
@@ -91,7 +93,8 @@ func deleteAllRecordsOfThisCredit(credit_id int) {
 	feature := webcore.NewFeature()
 	var records []Record
 	feature.Db.Where("comment = '[CREDIT] ?' and is_mutable = ?", credit_id, false).Find(&records)
-	for _, record := range records {
-		feature.Db.Delete(&record)
-	}
+	// for _, record := range records {
+	// 	feature.Db.Delete(&record)
+	// }
+	feature.Db.Delete(&records)
 }
