@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/elanticrypt0/denario_go/core"
+	"github.com/elanticrypt0/webcore"
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
-	app_config := core.LoadConfig()
+	app_config := webcore.LoadConfig()
 	// app_url := fmt.Sprintf("%s:%s", appConfig.App_server_host, appConfig.App_server_port)
 
 	app := fiber.New()
