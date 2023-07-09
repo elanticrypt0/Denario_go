@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/elanticrypt0/denario_go/src/features"
-	"github.com/elanticrypt0/denario_go/src/models"
 	"github.com/elanticrypt0/denario_go/src/webcore"
+	"github.com/elanticrypt0/denario_go/src/webcore_features"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -85,15 +85,28 @@ func main() {
 	// setup
 	setup := app.Group("/setup")
 	if app_config.App_setup_enabled {
-		setup.Get("/migrate", func(c *fiber.Ctx) error {
-			feature := webcore.NewFeature()
-			feature.Db.AutoMigrate(&models.Category{}, &models.Credit{}, &models.Record{})
-			return c.SendString("Setup enabled")
-
+		setup.Get("/", func(c *fiber.Ctx) error {
+			return webcore_features.Setup(c)
 		})
+	}
 
-		setup.Get("/seeder", func(c *fiber.Ctx) error {
-			return c.SendString("Seeder enabled")
+	//status
+	status := app.Group("/status")
+	status.Get("/", func(c *fiber.Ctx) error {
+		return webcore_features.Status(c)
+	})
+
+	status.Get("/getenv", func(c *fiber.Ctx) error {
+		return webcore_features.ReadEnv(c)
+	})
+
+	seeder := api.Group("/seeder")
+	if app_config.App_setup_enabled {
+		seeder.Get("/seed/", func(c *fiber.Ctx) error {
+			return webcore_features.Seed(c)
+		})
+		seeder.Get("/seed/:table_name", func(c *fiber.Ctx) error {
+			return webcore_features.Seed(c)
 		})
 	}
 
