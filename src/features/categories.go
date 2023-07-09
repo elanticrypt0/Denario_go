@@ -1,8 +1,8 @@
 package features
 
 import (
-	"github.com/elanticrypt0/denario_go/models"
-	"github.com/elanticrypt0/denario_go/webcore"
+	"github.com/elanticrypt0/denario_go/src/models"
+	"github.com/elanticrypt0/denario_go/src/webcore"
 )
 
 func FindOneCategory(id int) models.Category {

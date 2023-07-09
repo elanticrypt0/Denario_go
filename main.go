@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/elanticrypt0/denario_go/features"
-	"github.com/elanticrypt0/denario_go/webcore"
+	"github.com/elanticrypt0/denario_go/src/features"
+	"github.com/elanticrypt0/denario_go/src/webcore"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,25 +14,37 @@ func main() {
 
 	app := fiber.New()
 
-	// app.Get("/", func(c *fiber.Ctx) error {
-	// 	return c.SendString("Hello, World 👋!")
-	// })
-
+	api := app.Group("/api")
+	categories := api.Group("/categories")
 	// categories
-	app.Get("/categories", func(c *fiber.Ctx) error {
+	categories.Get("/", func(c *fiber.Ctx) error {
 		categories := features.FindAllCategories()
 		return c.JSON(categories)
 	})
 
 	// credits
-	app.Get("/credits", func(c *fiber.Ctx) error {
+	credits := api.Group("/credits")
+	credits.Get("/", func(c *fiber.Ctx) error {
 		credits := features.FindAllCredits()
 		return c.JSON(credits)
 	})
 
+	// records
+	records := api.Group("/records")
+	records.Get("/", func(c *fiber.Ctx) error {
+		records := features.FindAllRecords()
+		return c.JSON(records)
+	})
+
+	// setup
+	setup := app.Group("/setup")
 	if app_config.App_setup_enabled {
-		app.Get("/setup", func(c *fiber.Ctx) error {
+		setup.Get("/setup", func(c *fiber.Ctx) error {
 			return c.SendString("Setup enabled")
+		})
+
+		setup.Get("/seeder", func(c *fiber.Ctx) error {
+			return c.SendString("Seeder enabled")
 		})
 	}
 
