@@ -1,17 +1,20 @@
 package models
 
-import "github.com/elanticrypt0/denario_go/src/webcore"
+import (
+	"github.com/elanticrypt0/denario_go/src/webcore"
+	"gorm.io/gorm"
+)
 
 type Record struct {
-	ID         int     `json:"id"`
-	Name       string  `json:"name"`
-	Amount     float64 `json:"amount"`
-	AmountIo   string  `json:"amount_io"`
-	Comment    string  `json:"comment"`
-	RecordDate string  `json:"record_date"`
-	CategoryID int     `json:"category_id"`
-	IsMutable  bool    `json:"is_mutable"`
-	IsDeleted  bool    `json:"is_deleted"`
+	gorm.Model
+	Name       string   `json:"name"`
+	Amount     float64  `json:"amount"`
+	AmountIo   string   `json:"amount_io"`
+	Comment    string   `json:"comment"`
+	RecordDate string   `json:"record_date"`
+	CategoryID int      `json:"category_id"`
+	Category   Category `gorm:"foreignKey:CategoryID"`
+	IsMutable  bool     `json:"is_mutable"`
 }
 
 // Find a record by ID
@@ -30,7 +33,7 @@ func FindOneRecord(id int) Record {
 func FindAllRecords() []Record {
 	feature := webcore.NewFeature()
 	var records []Record
-	feature.Db.Find(&records)
+	feature.Db.Order("record_date ASC").Find(&records)
 	return records
 }
 
@@ -68,7 +71,6 @@ func DeleteRecord(id int) Record {
 	feature := webcore.NewFeature()
 	var record Record
 	feature.Db.First(&record, id)
-	record.IsDeleted = true
-	feature.Db.Save(&record)
+	feature.Db.Delete(&record)
 	return record
 }

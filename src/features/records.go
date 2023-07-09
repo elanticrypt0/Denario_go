@@ -26,15 +26,9 @@ func FindAllRecords(c *fiber.Ctx) error {
 // Return the new record
 // Return an error if there was a problem
 func CreateRecord(c *fiber.Ctx) error {
-	name := c.Params("name", "")
-	amount, _ := strconv.ParseFloat(c.Params("amount", "0"), 64)
-	amount_io := c.Params("amount_io", "")
-	comment := c.Params("comment", "")
-	record_date := c.Params("record_date", "")
-	category_id, _ := strconv.Atoi(c.Params("category_id", "0"))
-	is_mutable, _ := strconv.ParseBool(c.Params("is_mutable", "false"))
-
-	record := models.CreateRecord(name, amount, amount_io, comment, record_date, category_id, is_mutable)
+	r := new(models.Record)
+	c.BodyParser(&r)
+	record := models.CreateRecord(r.Name, r.Amount, r.AmountIo, r.Comment, r.RecordDate, r.CategoryID, r.IsMutable)
 	return c.JSON(record)
 }
 
@@ -43,24 +37,9 @@ func CreateRecord(c *fiber.Ctx) error {
 // Return an error if there was a problem
 func UpdateRecord(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id", "0"))
-	name := c.Params("name", "")
-	amount, _ := strconv.ParseFloat(c.Params("amount", "0"), 64)
-	amount_io := c.Params("amount_io", "")
-	comment := c.Params("comment", "")
-	record_date := c.Params("record_date", "")
-	category_id, _ := strconv.Atoi(c.Params("category_id", "0"))
-	is_mutable, _ := strconv.ParseBool(c.Params("is_mutable", "false"))
-
 	record := models.FindOneRecord(id)
-	record.Name = name
-	record.Amount = amount
-	record.AmountIo = amount_io
-	record.Comment = comment
-	record.RecordDate = record_date
-	record.CategoryID = category_id
-	record.IsMutable = is_mutable
+	c.BodyParser(&record)
 	models.UpdateRecord(record)
-
 	return c.JSON(record)
 }
 

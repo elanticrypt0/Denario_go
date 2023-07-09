@@ -17,37 +17,21 @@ func FindAllCredits(c *fiber.Ctx) error {
 }
 
 func CreateCredit(c *fiber.Ctx) error {
-	name := c.Params("name", "")
-	comment := c.Params("comment", "")
-	amount, _ := strconv.ParseFloat(c.Params("amount", "0"), 64)
-	payments, _ := strconv.Atoi(c.Params("payments", "0"))
-	started_at := c.Params("started_at", "")
-	finished_at := c.Params("finished_at", "")
-	category_id, _ := strconv.Atoi(c.Params("category_id", "0"))
-	is_mutable, _ := strconv.ParseBool(c.Params("is_mutable", "false"))
 
-	credit := models.CreateCredit(name, comment, amount, payments, started_at, finished_at, category_id, is_mutable)
+	new_c := new(models.Credit)
+	c.BodyParser(&new_c)
+	credit := models.CreateCredit(new_c.Name, new_c.Comment, new_c.Amount, new_c.Payments, new_c.StartedAt, new_c.FinishedAt, new_c.CategoryID)
 
+	cat_id := c.Params("category_id", "0")
+	category_id, _ := strconv.Atoi(cat_id)
+	models.CreateRecordsForCredit(credit, category_id)
 	return c.JSON(credit)
 }
 
 func UpdateCredit(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id", "0"))
 	credit := models.FindOneCredit(id)
-	name := c.Params("name", "")
-	comment := c.Params("comment", "")
-	amount, _ := strconv.ParseFloat(c.Params("amount", "0"), 64)
-	payments, _ := strconv.Atoi(c.Params("payments", "0"))
-	started_at := c.Params("started_at", "")
-	finished_at := c.Params("finished_at", "")
-
-	credit.Name = name
-	credit.Comment = comment
-	credit.Amount = amount
-	credit.Payments = payments
-	credit.StartedAt = started_at
-	credit.FinishedAt = finished_at
-
+	c.BodyParser(&credit)
 	credit = models.UpdateCredit(credit)
 
 	return c.JSON(credit)

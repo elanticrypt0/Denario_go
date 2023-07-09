@@ -18,16 +18,19 @@ func FindAllCategories(c *fiber.Ctx) error {
 }
 
 func CreateCategory(c *fiber.Ctx) error {
-	name := c.Params("name", "")
-	category := models.CreateCategory(name)
+	// name comes from json in body
+	cat := new(models.Category)
+	c.BodyParser(&cat)
+	category := models.CreateCategory(cat.Name)
 	return c.JSON(category)
 }
 
 func UpdateCategory(c *fiber.Ctx) error {
 	id, _ := strconv.Atoi(c.Params("id", "0"))
 	category := models.FindOneCategory(id)
-	name := c.Params("name", "")
-	category.Name = name
+	cat := new(models.Category)
+	c.BodyParser(&cat)
+	category.Name = cat.Name
 	category = models.UpdateCategory(category)
 	return c.JSON(category)
 }

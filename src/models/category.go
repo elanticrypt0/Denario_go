@@ -1,11 +1,13 @@
 package models
 
-import "github.com/elanticrypt0/denario_go/src/webcore"
+import (
+	"github.com/elanticrypt0/denario_go/src/webcore"
+	"gorm.io/gorm"
+)
 
 type Category struct {
-	ID        int    `json:"id"`
-	Name      string `json:"name"`
-	IsDeleted bool   `json:"is_deleted"`
+	gorm.Model
+	Name string `json:"name"`
 }
 
 func FindOneCategory(id int) Category {
@@ -18,7 +20,8 @@ func FindOneCategory(id int) Category {
 func FindAllCategories() []Category {
 	feature := webcore.NewFeature()
 	var categories []Category
-	feature.Db.Find(&categories)
+	// TODO revisar esta parte
+	feature.Db.Order("created_at ASC").Find(&categories)
 	return categories
 }
 
@@ -41,7 +44,6 @@ func DeleteCategory(id int) Category {
 	feature := webcore.NewFeature()
 	var category Category
 	feature.Db.First(&category, id)
-	category.IsDeleted = true
-	feature.Db.Save(&category)
+	feature.Db.Delete(&category)
 	return category
 }

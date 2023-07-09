@@ -43,6 +43,7 @@ func LoadConfig() AppConfig {
 func LoadConfigAndConnectDB() (*gorm.DB, AppConfig) {
 	app_config := LoadConfig()
 	db_connection := DbConnect(app_config.Db_config.Host, app_config.Db_config.User, app_config.Db_config.Password, app_config.Db_config.Dbname, app_config.Db_config.Port)
+
 	return db_connection, app_config
 }
 

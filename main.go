@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/elanticrypt0/denario_go/src/features"
+	"github.com/elanticrypt0/denario_go/src/models"
 	"github.com/elanticrypt0/denario_go/src/webcore"
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,13 +16,26 @@ func main() {
 	app := fiber.New()
 
 	api := app.Group("/api")
-	categories := api.Group("/categories")
+
 	// categories
+	categories := api.Group("/categories")
 	categories.Get("/", func(c *fiber.Ctx) error {
 		return features.FindAllCategories(c)
 	})
 	categories.Get("/:id", func(c *fiber.Ctx) error {
 		return features.FindOneCategory(c)
+	})
+
+	categories.Post("/", func(c *fiber.Ctx) error {
+		return features.CreateCategory(c)
+	})
+
+	categories.Put("/:id", func(c *fiber.Ctx) error {
+		return features.UpdateCategory(c)
+	})
+
+	categories.Delete("/:id", func(c *fiber.Ctx) error {
+		return features.DeleteCategory(c)
 	})
 
 	// credits
@@ -30,17 +44,52 @@ func main() {
 		return features.FindAllCredits(c)
 	})
 
+	credits.Get("/:id", func(c *fiber.Ctx) error {
+		return features.FindOneCredit(c)
+	})
+
+	credits.Post("/:category_id", func(c *fiber.Ctx) error {
+		return features.CreateCredit(c)
+	})
+
+	credits.Put("/:id", func(c *fiber.Ctx) error {
+		return features.UpdateCredit(c)
+	})
+
+	credits.Delete("/:id", func(c *fiber.Ctx) error {
+		return features.DeleteCredit(c)
+	})
+
 	// records
 	records := api.Group("/records")
 	records.Get("/", func(c *fiber.Ctx) error {
 		return features.FindAllRecords(c)
 	})
 
+	records.Get("/:id", func(c *fiber.Ctx) error {
+		return features.FindOneRecord(c)
+	})
+
+	records.Post("/", func(c *fiber.Ctx) error {
+		return features.CreateRecord(c)
+	})
+
+	records.Put("/:id", func(c *fiber.Ctx) error {
+		return features.UpdateRecord(c)
+	})
+
+	records.Delete("/:id", func(c *fiber.Ctx) error {
+		return features.DeleteRecord(c)
+	})
+
 	// setup
 	setup := app.Group("/setup")
 	if app_config.App_setup_enabled {
-		setup.Get("/setup", func(c *fiber.Ctx) error {
+		setup.Get("/migrate", func(c *fiber.Ctx) error {
+			feature := webcore.NewFeature()
+			feature.Db.AutoMigrate(&models.Category{}, &models.Credit{}, &models.Record{})
 			return c.SendString("Setup enabled")
+
 		})
 
 		setup.Get("/seeder", func(c *fiber.Ctx) error {
