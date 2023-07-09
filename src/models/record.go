@@ -55,13 +55,19 @@ func CreateRecord(name string, amount float64, amount_io string, comment string,
 	return record
 }
 
-// Update a record
+// Update a record if it is mutable
 // Return the updated record
 // Return an error if there was a problem
-func UpdateRecord(record Record) Record {
+// TODO funciona pero devuelve el record actualizado. Deberìa mostrar el record viejo
+func UpdateRecord(new_record Record) Record {
 	feature := webcore.NewFeature()
-	feature.Db.Save(&record)
-	return record
+	current_record := new(Record)
+	feature.Db.First(&current_record, new_record.ID)
+	if current_record.IsMutable == false {
+		return *current_record
+	}
+	feature.Db.Save(&new_record)
+	return new_record
 }
 
 // Delete a record

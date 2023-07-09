@@ -1,5 +1,11 @@
 [
     {
         "name":"Mi primer categoría"
+    },
+    {
+        "name":"Mi segunda categoría"
+    },
+    {
+        "name":"Mi tercer categoría"
     }
 ]

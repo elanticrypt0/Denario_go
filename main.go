@@ -114,6 +114,4 @@ func main() {
 
 	app.Listen(":" + app_config.App_server_port)
 
-	fmt.Println("Server started on port 3000")
-
 }
