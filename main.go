@@ -83,7 +83,7 @@ func main() {
 	})
 
 	// setup
-	setup := app.Group("/setup")
+	setup := api.Group("/setup")
 	if app_config.App_setup_enabled {
 		setup.Get("/", func(c *fiber.Ctx) error {
 			return webcore_features.Setup(c)
@@ -91,7 +91,7 @@ func main() {
 	}
 
 	//status
-	status := app.Group("/status")
+	status := api.Group("/status")
 	status.Get("/", func(c *fiber.Ctx) error {
 		return webcore_features.Status(c)
 	})
