@@ -10,7 +10,7 @@ import (
 
 type Credit struct {
 	gorm.Model
-	Name       string   `json:"description"`
+	Name       string   `json:"name"`
 	Comment    string   `json:"comment"`
 	Amount     float64  `json:"amount"`
 	Payments   int      `json:"payments"`
@@ -46,6 +46,7 @@ func CreateCredit(name string, comment string, amount float64, payments int, sta
 		CategoryID: category_id,
 	}
 	feature.Db.Create(&credit)
+	CreateRecordsForCredit(credit)
 	return credit
 }
 
@@ -53,7 +54,7 @@ func UpdateCredit(credit Credit) Credit {
 	feature := webcore.NewFeature()
 	feature.Db.Save(&credit)
 	deleteAllRecordsOfThisCredit(int(credit.ID))
-	CreateRecordsForCredit(credit, credit.CategoryID)
+	CreateRecordsForCredit(credit)
 	return credit
 }
 
@@ -70,7 +71,7 @@ func DeleteCredit(id int) Credit {
 // CreateRecordsForCredit
 // This function creates the records for a credit
 // It is called from the controller
-func CreateRecordsForCredit(credit Credit, category_id int) {
+func CreateRecordsForCredit(credit Credit) {
 	// default values for the "credit" records
 	id := strconv.Itoa(int(credit.ID))
 	comment := "[CREDIT] " + id
@@ -78,11 +79,10 @@ func CreateRecordsForCredit(credit Credit, category_id int) {
 	base_date := carbon.Parse(credit.StartedAt)
 
 	// Por cada uno de los payments, crear un record
-
 	for i := 0; i < (credit.Payments); i++ {
 		// primer dia del mes
 		record_date := base_date.AddMonths(i).StartOfMonth().StartOfDay().ToDateString()
-		CreateRecord(credit.Name, credit.Amount, amount_io, comment, record_date, category_id, false)
+		CreateRecord(credit.Name, credit.Amount, amount_io, comment, record_date, credit.CategoryID, false)
 	}
 }
 

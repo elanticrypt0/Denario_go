@@ -22,9 +22,6 @@ func CreateCredit(c *fiber.Ctx) error {
 	c.BodyParser(&new_c)
 	credit := models.CreateCredit(new_c.Name, new_c.Comment, new_c.Amount, new_c.Payments, new_c.StartedAt, new_c.FinishedAt, new_c.CategoryID)
 
-	cat_id := c.Params("category_id", "0")
-	category_id, _ := strconv.Atoi(cat_id)
-	models.CreateRecordsForCredit(credit, category_id)
 	return c.JSON(credit)
 }
 
